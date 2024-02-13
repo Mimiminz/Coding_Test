@@ -1,9 +1,14 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
+
+/**
+ * BOJ 16435 스네이크버드
+ * @author JOMINJU
+ *
+ *	
+ */
 
 public class Main {
 	public static BufferedReader br;
@@ -18,17 +23,17 @@ public class Main {
 		int snakeBirdLength = Integer.parseInt(st.nextToken());
 		st = new StringTokenizer(br.readLine().trim());
 		
-		List<Integer> fruits = new ArrayList<Integer>();
+		int[] fruits = new int[fruitsNum];
 		for(int idx = 0; idx < fruitsNum; idx++)
-			fruits.add(Integer.parseInt(st.nextToken()));
+			fruits[idx] = Integer.parseInt(st.nextToken());
 		
 		int flag;
 		while(true) {
 			flag = 0;
-			for(int idx = 0; idx < fruits.size(); idx++) {
-				if(fruits.get(idx) <= snakeBirdLength) {
+			for(int idx = 0; idx < fruitsNum; idx++) {
+				if(fruits[idx] <= snakeBirdLength) {
 					snakeBirdLength++;
-					fruits.remove(idx);
+					fruits[idx] = Integer.MAX_VALUE;
 					flag = 1;
 				}
 			}
