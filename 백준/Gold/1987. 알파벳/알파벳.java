@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -24,7 +22,7 @@ public class Main {
 	public static int colSize;
 	public static char[][] board;
 	public static int result;
-	public static List<Character> alphabet;
+	public static boolean[] alphabet;
 	
 	public static int[] dx = {-1, 1, 0, 0};
 	public static int[] dy = {0, 0, -1, 1};
@@ -35,12 +33,13 @@ public class Main {
 		for(int direct = 0; direct < 4; direct++) {
 			int currentX = dx[direct] + row;
 			int currentY = dy[direct] + col;
-			int alphaLength = alphabet.size();
-			if(currentX >= 0 && currentY >= 0 && currentX < rowSize && currentY < colSize
-					&& !alphabet.contains(board[currentY][currentX])) {
-				alphabet.add(board[currentY][currentX]);
+			if(currentX < 0 || currentY < 0 || currentX >= rowSize || currentY >= colSize)
+				continue;
+			
+			if(!alphabet[board[currentY][currentX] - 'A']) {
+				alphabet[board[currentY][currentX] - 'A']= true;
 				dfs(current+1, currentY, currentX);
-				alphabet.remove(alphaLength);
+				alphabet[board[currentY][currentX] - 'A']= false;
 			}
 		}
 	}
@@ -52,9 +51,8 @@ public class Main {
 		colSize = Integer.parseInt(st.nextToken());
 		rowSize = Integer.parseInt(st.nextToken());
 		board = new char[colSize][rowSize];
-		result = 1;
 		
-		alphabet = new ArrayList<>();
+		alphabet = new boolean[26];
 		
 		for(int col = 0; col < colSize; col++) {
 			String rowStr = br.readLine().trim();
@@ -62,7 +60,7 @@ public class Main {
 				board[col][row] = rowStr.charAt(row);
 			}
 		}
-		alphabet.add(board[0][0]);
+		alphabet[board[0][0]- 'A'] = true;
 		dfs(1,0,0);
 		sb.append(result);
 		System.out.println(sb);
