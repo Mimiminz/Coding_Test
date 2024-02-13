@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
@@ -27,18 +28,14 @@ public class Main {
 		for(int idx = 0; idx < fruitsNum; idx++)
 			fruits[idx] = Integer.parseInt(st.nextToken());
 		
-		int flag;
-		while(true) {
-			flag = 0;
-			for(int idx = 0; idx < fruitsNum; idx++) {
-				if(fruits[idx] <= snakeBirdLength) {
-					snakeBirdLength++;
-					fruits[idx] = Integer.MAX_VALUE;
-					flag = 1;
-				}
-			}
-			if(flag == 0)
+		Arrays.sort(fruits);
+	
+		for(int idx = 0; idx < fruitsNum; idx++) {
+			if(fruits[idx] <= snakeBirdLength) {
+				snakeBirdLength++;
+			}else {
 				break;
+			}
 		}
 		sb.append(snakeBirdLength);
 		System.out.println(sb);
