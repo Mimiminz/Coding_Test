@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
@@ -27,14 +26,11 @@ public class Main {
 	
 	// 기자가 보낸 결과와 일치하는지 확인하는 함수
 	public static int isPossible() {
-		//System.out.println("--------------");
 		for(int nation = 0; nation < 6; nation++) {
 			for(int check = 0; check < 3; check++) {
-				//System.out.printf(report[nation][check] + " ");
 				if(report[nation][check] != 0)
 					return 0;
 			}
-			//System.out.println();
 		}
 		return 1;
 	}
