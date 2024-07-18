@@ -1,48 +1,57 @@
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+import java.lang.StringBuilder;
+
 public class Main {
-    public static void main(String[] args){
-        Scanner sc=new Scanner(System.in);
-        int n=sc.nextInt();
-        int[][]list=new int[n+1][n+1];  //페인트 칠 비용 입력
-        int[][]dp=new int[n+1][n+1]; //  0:빨강 1:초록 2:파랑  ex) dp[2][1] ->집 2개의 마지막집을 초록색으로 색칠했을때 드는 최소 비용
-        int[]paint=new int[n+1]; //첫집의 색깔에 따라 나오는 최소비용
+    public static BufferedReader br;
+	public static StringBuilder sb;
+	public static StringTokenizer st;
+    public static void main(String[] args) throws IOException {
+		br = new BufferedReader(new InputStreamReader(System.in));
+		sb = new StringBuilder();
 
-        for(int i=1;i<=n;i++) {
-            for (int j = 0; j < 3; j++) {
-                list[i][j] = sc.nextInt();
-            }
+        int homeNumber = Integer.parseInt(br.readLine().trim());
+        int[][] money = new int[homeNumber][3];
+        int[][] dp = new int[homeNumber][3];
+        int[] result = new int[3];
+        //int minValue = 1001;
+        for(int cnt = 0; cnt < homeNumber; cnt++){
+            st = new StringTokenizer(br.readLine().trim());
+            money[cnt][0] = Integer.parseInt(st.nextToken());
+            money[cnt][1] = Integer.parseInt(st.nextToken());
+            money[cnt][2] = Integer.parseInt(st.nextToken());
         }
-
-        for(int i=0;i<3;i++) {    //이번에는 첫집에 i색을 칠하겠어요
-            for (int j = 0; j < 3; j++) { //색깔들은 준비해주세요
-                if (i == j)
-                    dp[1][j] = list[1][j]; // 예정대로 첫집에 i색을 칠하겠어요
-                else
-                    dp[1][j] = 1001; //나머지 색은 색칠안해요 (완전 논외로 취급)
-            }
-
-            //이제 2번째 집 부터 색칠해줄게요
-            for (int k = 2; k < n + 1; k++) {
-                dp[k][0] = Math.min(dp[k - 1][1], dp[k - 1][2]) + list[k][0];
-                dp[k][1] = Math.min(dp[k - 1][0], dp[k - 1][2]) + list[k][1];
-                dp[k][2] = Math.min(dp[k - 1][0], dp[k - 1][1]) + list[k][2];
-                if(k==n){     //마지막집은 첫집이랑 색깔이 달라야한다
-                    if(i==0){ //첫집에 빨간색을 칠했을경우 마지막은 초록 아님 파랑
-                        paint[i]=Math.min(dp[n][1],dp[n][2]);
-                    }
-                    if(i==1){ //첫집에 초록색을 칠했을경우 마지막은 빨강 아님 파랑
-                        paint[i]=Math.min(dp[n][0],dp[n][2]);
-                    }
-                    if(i==2){ //첫집에 파랑색을 칠했을경우 마지막은 빨강 아님 초랑
-                        paint[i]=Math.min(dp[n][0],dp[n][1]);
-                    }
-
+        for(int color = 0; color < 3; color++){
+            for(int paint = 0; paint < 3; paint++){
+                if(color == paint){
+                    dp[0][paint] = money[0][paint];
+                }else{
+                    dp[0][paint] = 1001;
                 }
             }
 
-        }
+            for(int idx = 1; idx < homeNumber; idx++){
+                dp[idx][0] = Math.min(dp[idx-1][1], dp[idx-1][2]) + money[idx][0];
+                dp[idx][1] = Math.min(dp[idx-1][0], dp[idx-1][2]) + money[idx][1];
+                dp[idx][2] = Math.min(dp[idx-1][0], dp[idx-1][1]) + money[idx][2];
 
-        //그중에서 최솟값이 페인트 최소 비용
-        System.out.print(Math.min(paint[0],Math.min(paint[1],paint[2])));
+                if(idx == (homeNumber -1)){
+                    if(color == 0){
+                        result[color] = Math.min(dp[idx][1], dp[idx][2]);
+                    }
+                    if(color == 1){
+                        result[color] = Math.min(dp[idx][0], dp[idx][2]);
+                    }
+                    if(color == 2){
+                        result[color] = Math.min(dp[idx][0], dp[idx][1]);
+                    }
+                    //result = Math.min(result, minValue);
+                }
+            }
+        }
+        sb.append(Math.min(result[0],Math.min(result[1],result[2])));
+        System.out.println(sb);
     }
 }
