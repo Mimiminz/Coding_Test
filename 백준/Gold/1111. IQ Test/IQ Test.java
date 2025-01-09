@@ -2,67 +2,63 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
+/**
+ * BOJ 1111 IQ Test
+ * @author JOMINJU
+ * 
+ * a만큼 구하고 b를 더하기 때문에 구하기 어렵지는 않은 문제
+ * 다만 예외 사항이 꽤 많고 구별해야 할 경우가 많다.
+ * 
+ */
+
 public class Main {
 
+    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static StringBuilder sb = new StringBuilder();
+    public static int multi;
+    public static int add;
+    public static int count;
+    public static int[] arr;
+
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int count = Integer.parseInt(br.readLine());
-        int[] arr = new int[count];
+        count = Integer.parseInt(br.readLine().trim());
         StringTokenizer st = new StringTokenizer(br.readLine());
-        
-        for (int i = 0; i < count; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
+        arr = new int[count];
+
+        for (int idx = 0; idx < count; idx++) {
+            arr[idx] = Integer.parseInt(st.nextToken());
         }
 
         if (count == 1) {
-            // 수가 1개면 다음 수를 알 수 없음
             System.out.println("A");
             return;
         }
+
         if (count == 2) {
-            // 수가 2개면 여러 해석 가능
             System.out.println(arr[0] == arr[1] ? arr[0] : "A");
             return;
         }
 
-        // a와 b 계산
-        Integer a = null, b = null;
-        if (arr[1] - arr[0] != 0) {
-            if ((arr[2] - arr[1]) % (arr[1] - arr[0]) != 0) {
-                System.out.println("B");
-                return;
-            }
-            a = (arr[2] - arr[1]) / (arr[1] - arr[0]);
-            b = arr[1] - arr[0] * a;
+        if (arr[1] - arr[0] == 0) {
+            multi = 0;
+            add = arr[1];
+        } else if ((arr[2] - arr[1]) % (arr[1] - arr[0]) != 0) {
+            System.out.println("B");
+            return;
         } else {
-            // 모든 숫자가 같은 경우
-            a = 0;
-            b = arr[0];
+            multi = (arr[2] - arr[1]) / (arr[1] - arr[0]);
+            add = arr[1] - arr[0] * multi;
         }
 
-        // 모든 숫자가 a, b 규칙을 따르는지 확인
-        for (int i = 0; i < count - 1; i++) {
-            if (arr[i + 1] != arr[i] * a + b) {
+        // 규칙을 전부 따르는지 확인
+        for (int idx = 0; idx < count - 1; idx++) {
+            if (arr[idx + 1] != arr[idx] * multi + add) {
                 System.out.println("B");
                 return;
             }
         }
 
-        // 다음 숫자가 유일한지 확인
-        int next = arr[count - 1] * a + b;
-        boolean isConsistent = true;
-
-        for (int i = 0; i < count - 2; i++) {
-            if (arr[i + 1] != arr[i] * a + b) {
-                isConsistent = false;
-                break;
-            }
-        }
-
-        if (isConsistent) {
-            System.out.println(next);
-        } else {
-            System.out.println("A");
-        }
+        sb.append(arr[count - 1] * multi + add);
+        System.out.println(sb);
     }
 }
