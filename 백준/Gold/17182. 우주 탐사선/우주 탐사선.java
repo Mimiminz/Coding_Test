@@ -1,70 +1,122 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.StringTokenizer;
-import java.lang.StringBuilder;
 
-public class Main {
-    public static BufferedReader br;
-	public static StringBuilder sb;
-	public static StringTokenizer st;
+/**
+ * BOJ 17182 우주 탐사선
+ * @author JOMINJU
+ * 
+ * 행성의 개수와 각 행성에서 행성까지의 거리가 주어졌을 때, 모든 행성을 탐사하기 위한 최소 시간 구하기
+ * 
+ * 1. 다익스트라 알고리즘을 통해 행성에서 행성까지 걸리는 최소 시간 구하기
+ * 2. dfs 알고리즘을 통해 모든 행성을 돌아보기까지의 최소 시간 구하기
+ * 
+ */
 
-    public static int count;
-    public static int location;
-    public static int[][] time;
-    public static int result = Integer.MAX_VALUE;
+ public class Main {
+    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static StringBuilder sb = new StringBuilder();
 
-    public static boolean[] visited;
+    public static int plantNum, startLocate, result;
+    public static ArrayList<Node>[] distance;
+    public static boolean[] visited; 
 
-    public static void findDist(int level, int start, int sum){
-        if(level == count-1){
-            result = Math.min(result, sum);
-            return;
+    public static int[][] shortest;
+    public static int INF = 987654321;
+
+    static class Node implements Comparable<Node>{
+        int end;
+        int weight;
+
+        Node(int end, int weight){
+            this.end = end;
+            this.weight = weight;
         }
 
-        for (int cnt = 0; cnt < count; cnt++) {
-            if(!visited[cnt]){
-                visited[cnt] = true;
-                findDist(level+1, cnt, sum+time[start][cnt]);
-                visited[cnt] = false;
-            }
+        @Override
+        public int compareTo(Node o) {
+            return Integer.compare(this.weight, o.weight);
         }
     }
 
     public static void main(String[] args) throws IOException {
-		br = new BufferedReader(new InputStreamReader(System.in));
-		sb = new StringBuilder();
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        plantNum = Integer.parseInt(st.nextToken());
+        startLocate = Integer.parseInt(st.nextToken());
+        distance = new ArrayList[plantNum];
+        for (int i = 0; i < plantNum; i++)  distance[i] = new ArrayList<>();
 
-        st = new StringTokenizer(br.readLine().trim());
-        count = Integer.parseInt(st.nextToken());
-        location = Integer.parseInt(st.nextToken());
+        shortest = new int[plantNum][plantNum];
+        result = INF;
 
-        time = new int[count][count];
-        visited = new boolean[count];
-
-        for (int i = 0; i < count; i++) {
-            st = new StringTokenizer(br.readLine().trim());
-            for (int j = 0; j < count; j++) {
-                time[i][j] = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < plantNum; i++) {
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < plantNum; j++) {
+                int weight = Integer.parseInt(st.nextToken());
+                distance[i].add(new Node(j, weight));
             }
         }
 
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < count; j++) {
-                for (int k = 0; k < count; k++) {
-                    if(j == k){
-                        continue;
+        dijkstra();
+        visited[startLocate] = true;
+        dfs(startLocate, 0, 1);
+
+        System.out.println(result);
+    }
+
+    public static void dijkstra() {
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        visited = new boolean[plantNum];
+
+        for(int idx = 0; idx < plantNum; idx++){
+            Arrays.fill(shortest[idx], INF);
+
+            shortest[idx][idx] = 0;
+            pq.offer(new Node(idx, 0));
+            
+            while(!pq.isEmpty()){
+                int curPlant = pq.poll().end;
+                if(visited[curPlant]){
+                    continue;
+                }
+                
+                visited[curPlant] = true;
+                for(Node p : distance[curPlant]){
+                    if(shortest[idx][p.end] > shortest[idx][curPlant] + p.weight){
+                        shortest[idx][p.end] = shortest[idx][curPlant] + p.weight;
+                        pq.offer(p);
                     }
-                    time[j][k] = Math.min(time[j][k], time[j][i]+time[i][k]);
                 }
             }
+            Arrays.fill(visited, false);
+        }
+    }
+
+    public static void dfs(int startPlant, int curWeight, int checkNum) {
+        if(checkNum == plantNum){
+            result = Math.min(result, curWeight);
+            return;
         }
 
-        visited[location] = true;
-        findDist(0, location, 0);
-       
+        if(curWeight > result){
+            return;
+        }
 
-        sb.append(result);
-        System.out.println(sb);
+        for(int idx = 0; idx < plantNum; idx++){
+            if(visited[idx]){
+                continue;
+            }
+
+            visited[idx] = true;
+            dfs(idx, curWeight + shortest[startPlant][idx], checkNum + 1);
+            visited[idx] = false;
+        }
     }
 }
